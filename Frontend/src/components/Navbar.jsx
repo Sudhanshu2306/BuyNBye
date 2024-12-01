@@ -1,5 +1,5 @@
 import React from 'react'
-
+import NavAvatar from './NavAvatar'
 function Navbar() {
   return (
     <div>
@@ -28,7 +28,7 @@ function Navbar() {
       {/* Shopping Bag Icon */}
       <div className="flex items-center space-x-2">
         <div className="relative">
-        
+         <NavAvatar></NavAvatar>
         </div>
       </div>
     </nav>
