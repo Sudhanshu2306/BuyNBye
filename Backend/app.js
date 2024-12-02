@@ -20,8 +20,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 // // Routes
-
-// app.use("/api/v1/users", );
+import authroutes from "./routes/auth.Routes.js"
+app.use("/api/v1/users", authroutes);
 // app.use("/api/v1/products", );
 // app.use("/api/v1/orders", );
 

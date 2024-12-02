@@ -1,31 +1,28 @@
-const jwt = require("jsonwebtoken");
-const config = require("../config/config");
-const { User } = require("../module/user.model");
-const { errorhandler } = require("../utils/error");
+import { errorhandler } from "../utils/errorHandler.js";
+import { asyncHandler } from "../utils/asynchandler.js";
+import jwt from "jsonwebtoken"
+import { User } from "../models/User.js";
+export const verifyJWT = asyncHandler(async(req, _, next) => {
+    try {
+        const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "")
 
+        if (!token) {
+            return res
+            .status(500)
+            .json( new errorhandler(401, "Unauthorized request"))
+        }
 
-const AuthMiddleware = async function (req, res, next) {
-  // Apply cookie-parser middleware to parse cookies
-  const { token } = req.cookies;
-  // console.log(token);
-  if (!token) {
-    // Pass error to the next middleware
-    return next(errorhandler(402, "UnAuthorized User"));
-  }
+        const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
 
-  try {
-    // Verify the token and decode it
-    const decoded = jwt.verify(token, config.TOKEN_SECRET);
-    // Find user by decoded user ID
-    req.User = await User.findById(decoded.UserId);
-    next();
-  } catch (error) {
-    console.log("Invalid Token Access (Inside the Middleware");
-    res.status({})
-    next(error);
-  }
-};
+        const user = await User.findById(decodedToken?._id).select("-password -refreshToken")
+        if (!user) {
+            throw new errorhandler(401, "Invalid Access Token")
+        }
 
-module.exports = {
-  AuthMiddleware,
-};
+        req.user = user;
+        next()
+    } catch (error) {
+        throw new errorhandler(401, error?.message || "Invalid access token")
+    }
+    
+})  
