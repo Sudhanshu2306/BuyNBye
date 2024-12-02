@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors'
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
+import morgan from "morgan";
+import authRoutes from './routes/authRoutes';
 
 // Initialize express app
 const app = express();
@@ -20,7 +22,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 // // Routes
-
+app.use("/api/v1/auth", authRoutes)
 // app.use("/api/v1/users", );
 // app.use("/api/v1/products", );
 // app.use("/api/v1/orders", );

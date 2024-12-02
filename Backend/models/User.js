@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema({
     name: {
         type: String,
         required: [true, "Please Enter Your Name"],
+        trim:true,
     },
     email: {
         type: String,
@@ -40,7 +41,8 @@ const userSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
-});
+},{timestamps : true}
+);
 
 // Pre-save middleware to hash the password before saving to the database
 userSchema.pre('save', async function (next) {
