@@ -1,154 +1,122 @@
-const asyncHandler = require('../middlewares/asyncHandler');
-const Order = require('../models/Order');
-const Product = require('../models/Product');
-const ErrorHandler = require('../utils/errorHandler');
-const sendEmail = require('../utils/sendEmail');
+import { asyncHandler } from '../utils/asynchandler.js';
+import { Order } from '../models/Order.js';
+// import { Product } from '../models/Product';
+import { ApiResponse } from '../utils/ApiResponse.js';
 
-// Create New Order
-exports.newOrder = asyncHandler(async (req, res, next) => {
-    const {
-        collectionInfo,
-        orderItems,
-        paymentInfo,
-        totalPrice,
-    } = req.body;
+// Create a new order
+const createOrder = asyncHandler(async (req, res) => {
+    const { collectionInfo, orderItems, user, paymentInfo, paidAt, totalPrice, orderStatus } = req.body;
 
-    const orderExist = await Order.findOne({ paymentInfo });
-
-    if (orderExist) {
-        return next(new ErrorHandler("Order Already Placed", 400));
+    // Validate order items
+    if (!orderItems || orderItems.length === 0) {
+        return res.status(400).json({ success: false, message: 'No items in the order' });
     }
-
-    const order = await Order.create({
+    // Create the order
+    const order = new Order({
         collectionInfo,
         orderItems,
+        user : req.user._id,
         paymentInfo,
         totalPrice,
-        paidAt: Date.now(),
-        user: req.user._id,
+        orderStatus: orderStatus || 'Processing',
     });
 
-    await sendEmail({
-        email: req.user.email,
-        templateId: process.env.SENDGRID_ORDER_TEMPLATEID,
-        data: {
-            name: req.user.name,
-            collectionInfo,
-            orderItems,
-            totalPrice,
-            oid: order._id,
-        }
-    });
+    await order.save();
+    res.status(201).json(
+        new ApiResponse(201,order,"ordered Successfully")
+    );
+});
 
-    res.status(201).json({
+// Get all orders
+const getAllOrders = asyncHandler(async (req, res) => {
+    const orders = await Order.find()
+        .populate('user')
+        .populate('orderItems.product');
+        
+    res.status(200).json({
         success: true,
-        order,
+        orders
     });
 });
 
-// Get Single Order Details
-exports.getSingleOrderDetails = asyncHandler(async (req, res, next) => {
-
-    const order = await Order.findById(req.params.id).populate("user", "name email");
+// Get an order by ID
+const getOrderById = asyncHandler(async (req, res) => {
+    const order = await Order.findById(req.params.id)
+        .populate('user')
+        .populate('orderItems.product');
 
     if (!order) {
-        return next(new ErrorHandler("Order Not Found", 404));
+        return res.status(404).json({ success: false, message: 'Order not found' });
     }
 
     res.status(200).json({
         success: true,
-        order,
+        order
     });
 });
 
-
-// Get Logged In User Orders
-exports.myOrders = asyncHandler(async (req, res, next) => {
-
-    const orders = await Order.find({ user: req.user._id });
-
-    if (!orders) {
-        return next(new ErrorHandler("Order Not Found", 404));
-    }
-
-    res.status(200).json({
-        success: true,
-        orders,
-    });
-});
-
-
-// Get All Orders ---ADMIN
-exports.getAllOrders = asyncHandler(async (req, res, next) => {
-
-    const orders = await Order.find();
-
-    if (!orders) {
-        return next(new ErrorHandler("Order Not Found", 404));
-    }
-
-    let totalAmount = 0;
-    orders.forEach((order) => {
-        totalAmount += order.totalPrice;
-    });
-
-    res.status(200).json({
-        success: true,
-        orders,
-        totalAmount,
-    });
-});
-
-// Update Order Status ---ADMIN
-exports.updateOrder = asyncHandler(async (req, res, next) => {
+// Update order status
+const updateOrderStatus = asyncHandler(async (req, res) => {
+    const { orderStatus, deliveredOn, collectedOn } = req.body;
 
     const order = await Order.findById(req.params.id);
 
     if (!order) {
-        return next(new ErrorHandler("Order Not Found", 404));
+        return res.status(404).json({ success: false, message: 'Order not found' });
     }
 
-    if (order.orderStatus === "Delivered") {
-        return next(new ErrorHandler("Already Delivered", 400));
-    }
+    if (orderStatus) order.orderStatus = orderStatus;
+    if (deliveredOn) order.deliveredOn = deliveredOn;
+    if (collectedOn) order.collectedOn = collectedOn;
 
-    if (req.body.status === "Shipped") {
-        order.shippedAt = Date.now();
-        order.orderItems.forEach(async (i) => {
-            await updateStock(i.product, i.quantity)
-        });
-    }
-
-    order.orderStatus = req.body.status;
-    if (req.body.status === "Delivered") {
-        order.deliveredAt = Date.now();
-    }
-
-    await order.save({ validateBeforeSave: false });
-
-    res.status(200).json({
-        success: true
-    });
+    await order.save();
+    res.status(200).json(new ApiResponse(
+        200, 
+        {
+            order : order
+        },
+        "Order Updated successfully"
+    ));
 });
 
-async function updateStock(id, quantity) {
-    const product = await Product.findById(id);
-    product.stock -= quantity;
-    await product.save({ validateBeforeSave: false });
-}
-
-// Delete Order ---ADMIN
-exports.deleteOrder = asyncHandler(async (req, res, next) => {
-
+// Delete an order
+const deleteOrder = asyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id);
 
     if (!order) {
-        return next(new ErrorHandler("Order Not Found", 404));
+        return res.status(404).json({ success: false, message: 'Order not found' });
     }
 
-    await order.remove();
+    await order.deleteOne({ _id: req.params.id });
+
+    res.status(200).json(
+        new ApiResponse(
+            200, 
+            {
+                
+            },
+            "Order deleted successfully"
+        )
+    );
+});
+
+// Get all orders of a specific user
+const getOrdersByUserId = asyncHandler(async (req, res) => {
+    const orders = await Order.find({ user: req.params.userId })
+        .populate('orderItems.product')
+        .populate('user');
 
     res.status(200).json({
         success: true,
+        orders
     });
 });
+
+export {
+    createOrder,
+    getAllOrders,
+    getOrderById,
+    updateOrderStatus,
+    deleteOrder,
+    getOrdersByUserId
+};

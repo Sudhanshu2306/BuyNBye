@@ -21,8 +21,10 @@ app.use(express.static("public"));
 
 // // Routes
 import authroutes from "./routes/auth.Routes.js"
+import productroutes from "./routes/Product.Routes.js"
+import orderroutes from "./routes/order.Routes.js"
 app.use("/api/v1/users", authroutes);
-// app.use("/api/v1/products", );
-// app.use("/api/v1/orders", );
+app.use("/api/v1/products", productroutes);
+app.use("/api/v1/orders", orderroutes);
 
 export { app, port };

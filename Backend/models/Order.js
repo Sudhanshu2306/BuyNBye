@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-
+// const mongoose = require('mongoose');
+import mongoose from "mongoose";
 const orderSchema = new mongoose.Schema({
     collectionInfo: {
         meeting_spot: {
@@ -16,7 +16,7 @@ const orderSchema = new mongoose.Schema({
             name: {
                 type: String,
                 required: true
-            },
+            },// Updated when order is collected
             price: {
                 type: Number,
                 required: true
@@ -30,30 +30,29 @@ const orderSchema = new mongoose.Schema({
                 required: true,
             },
             product: {
-                type: mongoose.Schema.ObjectId,
+                type: mongoose.Schema.Types.ObjectId,
                 ref: "Product",
                 required: true
             },
         },
     ],
     user: {
-        type: mongoose.Schema.ObjectId, // auto inc
+        type: mongoose.Schema.Types.ObjectId, // auto inc
         ref: "User",
         required: true
     },
     paymentInfo: {
-        id: {
+        mode: {
             type: String,
-            required: true
+            required: [true, "Please Enter Payment Mode"],
+            enum: ["CASH", "UPI", "POD", "COD"],
         },
         status: {
             type: String,
-            required: true
-        },
-    },
-    paidAt: {
-        type: Date,
-        required: true
+            required: true,
+            enum: ["Pending", "Completed"],
+            default: "Pending"
+        }
     },
     totalPrice: {
         type: Number,
@@ -63,14 +62,29 @@ const orderSchema = new mongoose.Schema({
     orderStatus: {
         type: String,
         required: true,
+        enum: ["Processing", "Delivered"],
         default: "Processing",
     },
-    deliveredOn: Date,
-    collectedOn: Date,
+    deliveredOn: {
+        type: Date,
+        default: null
+    },
+    collectedOn: {
+        type: Date,
+        default: null
+    },
     createdAt: {
         type: Date,
         default: Date.now
     },
 });
 
-module.exports = mongoose.model("Order", orderSchema);
+// Calculate total price dynamically when saving the order
+orderSchema.pre('save', function(next) {
+    if (this.orderItems && this.orderItems.length > 0) {
+        this.totalPrice = this.orderItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+    }
+    next();
+});
+
+export const Order = mongoose.model("Order", orderSchema);
