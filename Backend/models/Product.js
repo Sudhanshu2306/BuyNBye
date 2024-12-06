@@ -74,11 +74,6 @@ const productSchema = new mongoose.Schema({
         maxlength: [4, "Stock cannot exceed limit"],
         default: 1
     },
-    numOfReviews: {
-        type: Number,
-        default: 0
-    },
-
     user: {
         type: mongoose.Schema.ObjectId,
         ref: "User",
