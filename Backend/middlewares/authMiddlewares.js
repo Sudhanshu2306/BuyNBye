@@ -26,3 +26,26 @@ export const verifyJWT = asyncHandler(async(req, _, next) => {
     }
     
 })  
+
+export const isAdmin = async ( req,res,next)=>{
+    try {
+        const user =await User.findById(req.user._id);
+        if(!user.role !== 1){
+            return res.status(401).send({
+                success: false,
+                message: "UnAuthorizes Access",
+            });
+        }
+        else{
+            next();
+        }
+    } 
+    catch (error) {
+        console.log(error);
+        res.status(401).send({
+            success: false,
+            error,
+            message: "Error in Admin middleware",
+        });
+    }
+};

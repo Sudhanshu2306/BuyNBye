@@ -9,8 +9,8 @@ function App() {
     <div>
        <Navbar></Navbar>
        {/* <Card></Card> */}
-       {/* <About></About> */}
-       <Sell></Sell>
+       <About></About>
+       {/* <Sell></Sell> */}
        <Footer></Footer>
     </div>
   )
