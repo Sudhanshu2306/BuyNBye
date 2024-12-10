@@ -65,8 +65,9 @@ const registerUser = asyncHandler( async (req, res) => {
     )
     const options = {
         httpOnly: true,
-        secure: true
-    }
+        secure: true, // Only secure in production
+        sameSite: "None", // Required for cross-origin cookies
+    };
     if (!createdUser) {
         return res
         .status(500)
@@ -124,9 +125,11 @@ const loginUser = asyncHandler(async (req, res) =>{
         .json( new errorhandler(500, "Something went wrong while registering the user"))
     }
     const options = {
+        
         httpOnly: true,
-        secure: true
-    }
+        secure: true, // Only secure in production
+        sameSite: "None", // Required for cross-origin cookies
+    };
 
     return res
     .status(200)
@@ -247,13 +250,17 @@ const changeCurrentPassword = asyncHandler(async(req, res) => {
 
 
 const getCurrentUser = asyncHandler(async(req, res) => {
-    return res
-    .status(200)
-    .json(new ApiResponse(
-        200,
-        req.user,
-        "User fetched successfully"
-    ))
+    try {
+        return res
+        .status(200)
+        .json(new ApiResponse(
+            200,
+            req.user,
+            "User fetched successfully"
+        ))
+    } catch (error) {
+        console.log("No user Exist")
+    }
 })
 
 const updateAccountDetails = asyncHandler(async(req, res) => {

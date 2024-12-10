@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import NavAvatar from './NavAvatar';
+import { Link } from 'react-router-dom';
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -14,30 +15,30 @@ function Navbar() {
 
           {/* Centered Navigation Links */}
           <div className="hidden md:flex justify-center flex-grow space-x-8">
-            <a
-              href="#"
+            <Link
+              to={'/sell'}
               className="text-gray-800 hover:text-black font-medium transition"
             >
               Sell
-            </a>
-            <a
-              href="#"
+            </Link>
+            <Link
+              to={'/buy'}
               className="text-gray-800 hover:text-black font-medium transition"
             >
               Buy
-            </a>
-            <a
-              href="#"
+            </Link>
+            <Link
+              to={'/events'}
               className="text-gray-800 hover:text-black font-medium transition"
             >
               Events
-            </a>
-            <a
-              href="#"
+            </Link>
+            <Link
+              to={'/aboutus'}
               className="text-gray-800 hover:text-black font-medium transition"
             >
               About
-            </a>
+            </Link>
           </div>
 
           {/* Placeholder for Button or Additional Content */}
@@ -76,25 +77,25 @@ function Navbar() {
         <div className="md:hidden">
           <div className="space-y-2 px-4 pt-4 pb-6">
             <a
-              href="#"
+              to={'/'}
               className="block text-gray-800 hover:text-black font-medium transition"
             >
               New Stuff
             </a>
             <a
-              href="#"
+              to={'/'}
               className="block text-gray-800 hover:text-black font-medium transition"
             >
               Shop
             </a>
             <a
-              href="#"
+              to={'/'}
               className="block text-gray-800 hover:text-black font-medium transition"
             >
               Events
             </a>
             <a
-              href="#"
+              to={'/'}
               className="block text-gray-800 hover:text-black font-medium transition"
             >
               About
