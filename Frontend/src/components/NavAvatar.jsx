@@ -1,8 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
+import { useAuth } from "../context/AuthContext";
+import axios from "axios";
 function AdditionalButton() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
+  const {logout} = useAuth();
+  const handleLogout = async () => {
+    try {
+      logout();
+      const response = await axios.get('http://localhost:3000/api/v1/users/logout', {
+        withCredentials: true,
+      });
+  
+      console.log('Response is:', response.data);
+      // Clear user session or state here
+      // logout(); // Uncomment and implement as needed
+    } catch (error) {
+      console.error('Error during logout:', error.response ? error.response.data : error.message);
+    }
+  };
   return (
     <div className="relative">
       {/* Button */}
@@ -24,7 +40,7 @@ function AdditionalButton() {
           <ul className="py-2 text-gray-700">
             <li>
               <a
-                href="#"
+                link=""
                 className="block px-4 py-2 hover:bg-gray-100"
               >
                 My Profile
@@ -32,7 +48,7 @@ function AdditionalButton() {
             </li>
             <li>
               <a
-                href="#"
+                link=""
                 className="block px-4 py-2 hover:bg-gray-100"
               >
                 Need Help
@@ -40,7 +56,7 @@ function AdditionalButton() {
             </li>
             <li>
               <a
-                href="#"
+                onClick={handleLogout}
                 className="block px-4 py-2 hover:bg-gray-100"
               >
                 Sign Out
