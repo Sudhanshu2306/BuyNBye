@@ -8,6 +8,13 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+csstype
+goober
+react
+react-dom
+react-hot-toast
+scheduler
+
 dist
 dist-ssr
 *.local

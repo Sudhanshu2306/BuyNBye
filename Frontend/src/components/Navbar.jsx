@@ -28,12 +28,6 @@ function Navbar() {
               Buy
             </Link>
             <Link
-              to={'/events'}
-              className="text-gray-800 hover:text-black font-medium transition"
-            >
-              Events
-            </Link>
-            <Link
               to={'/aboutus'}
               className="text-gray-800 hover:text-black font-medium transition"
             >

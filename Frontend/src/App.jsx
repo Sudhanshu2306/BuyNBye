@@ -1,21 +1,19 @@
 import React from 'react'
-import Navbar from './components/Navbar'
-import Footer from './components/Footer'
-import Card from './components/Card'
-import About from './pages/AboutUs'
+import About from './About/About'
 import Sell from './Sell/Sell'
 import Signin from './pages/Signin'
 import Signup from './pages/Signup'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Bye from './Buy/Buy'
+import Home from './Home/Home'
 function App() {
 
   return (
 
       <>
       <BrowserRouter>
-      <Navbar/>
       <Routes>
+        <Route path="/" element={<Home/>} />
         <Route path="/signin" element={<Signin/>}/>
         <Route path="/signup" element={<Signup/>}/>
         <Route path="/sell" element={<Sell/>}/>

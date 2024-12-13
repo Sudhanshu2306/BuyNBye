@@ -102,9 +102,9 @@ function Footer() {
             <input
               type="email"
               placeholder="Your email address"
-              className="w-full px-3 py-2 rounded-md bg-gray-800 text-gray-300 border border-gray-700 focus:outline-none focus:ring focus:ring-gray-600"
+              className=" px-3 py-2 rounded-md bg-gray-800 text-gray-300 border border-gray-700 focus:outline-none focus:ring focus:ring-gray-600"
             />
-            <button className="bg-red-600 h-18 hover:bg-red-700 text-sm text-white px-2 py-1 rounded-md">
+            <button className="bg-red-600 h-10 w-50 hover:bg-red-700 text-sm text-white px-2 py-1 rounded-md">
               SIGN UP
             </button>
           </div>

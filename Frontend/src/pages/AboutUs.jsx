@@ -1,9 +1,9 @@
 import React from 'react'
-import me1 from '../Images/me1.jpg'
-import me2 from '../Images/me2.jpg'
-import me3 from '../Images/me3.jpg'
+import me1 from '../../public/images/me1.jpg'
+import me2 from '../../public/images/me2.jpg'
+import me3 from '../../public/images/me3.jpg'
 
-function About() {
+function AboutUs() {
   return (
     <div>
       <div className="md:flex items-center max-w-screen-xl h-full">
@@ -80,4 +80,4 @@ function About() {
   )
 }
 
-export default About;
+export default AboutUs;

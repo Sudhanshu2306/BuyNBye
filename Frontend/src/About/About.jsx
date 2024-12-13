@@ -1,18 +1,18 @@
 import React from "react";
-import Navbar from "../src/components/Navbar";
-import Footer from "../src/components/Footer";
 import AboutUs from "../pages/AboutUs"
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
-function AboutUs() {
+function About() {
   return (
     <>
       <Navbar />
-      <div className="display flex w-full h-screen items-center">
+      <div className="display flex w-full h-full items-center">
         <AboutUs />
       </div>
-      <Footer className='' />
+      <Footer />
     </>
   );
 }
 
-export default AboutUs;
+export default About;
