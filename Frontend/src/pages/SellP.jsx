@@ -1,133 +1,115 @@
 import React, { useState } from "react";
+import axios from "axios";
 
-const SellP = () => {
-    const [imagePreviews, setImagePreviews] = useState([]);
-
-  // Handle image upload and preview
-  const handleImageUpload = (event) => {
-    const files = Array.from(event.target.files);
-    const newPreviews = files.map((file) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      return new Promise((resolve) => {
-        reader.onload = () => resolve(reader.result);
-      });
+const UploadProduct = () => {
+    const [productData, setProductData] = useState({
+        item_name: "",
+        category: "",
+        price: "",
+        description: "",
+        openToBargain: "Yes",
+        quantity: 1,
+        image: "",
+        user: "65a12345b67890cde1234567" // Replace with actual user ID
     });
-  
-    Promise.all(newPreviews).then((loadedImages) => {
-        setImagePreviews((prev) => [...prev, ...loadedImages]);
-        });
-    };
-  
 
-    // Remove the uploaded image
-    const handleRemoveImage = (index) => {
-        setImagePreviews((prev) => prev.filter((_, i) => i !== index));
-    };
-  
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState("");
 
-  return (
-    <div className="bg-gradient-to-r from-cyan-500 to-blue-500 p-20">
-    
-    <div className="flex flex-col md:flex-row min-h-screen bg-white rounded-sm p-20">
-      {/* Left Side - Image Preview Area */}
-      <div className="flex flex-1 items-center justify-center border-dashed border-2 border-gray-300 rounded-lg bg-white p-6">
-        {imagePreviews.length > 0 ? (
-        imagePreviews.map((preview, index) => (
-        <div key={index} className="relative flex flex-col items-center">
-            <img
-            src={preview}
-            alt={`Uploaded Preview ${index + 1}`}
-            className="max-h-40 max-w-full object-contain mb-2"
-            />
-            <button
-            onClick={() => handleRemoveImage(index)}
-            className="bg-red-500 text-white py-1 px-3 rounded-md hover:bg-red-600 text-sm"
-            >
-            Remove
-            </button>
-        </div>
-        ))
-    ) : (
-        <div className="text-center">
-            <p className="text-gray-500 mb-4">Drop files to upload or</p>
-            <label
-                htmlFor="fileInput"
-                className="text-blue-500 cursor-pointer underline"
-            >
-                browse
+    // Handle input change
+    const handleChange = (e) => {
+        setProductData({ ...productData, [e.target.name]: e.target.value });
+    };
+
+    // Convert image to Base64
+    const handleImageUpload = (e) => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+
+        reader.onloadend = () => {
+            setProductData({ ...productData, image: reader.result });
+        };
+
+        if (file) {
+            reader.readAsDataURL(file);
+        }
+    };
+
+    // Submit data to backend
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setMessage("");
+
+        try {
+            const response = await axios.post("http://localhost:3001/api/v1/products/createProduct", productData, {
+                headers: { "Content-Type": "application/json" }
+            });
+
+            setMessage(response.data.message);
+            setLoading(false);
+        } catch (error) {
+            setMessage(error.response?.data?.message || "Error uploading product.");
+            setLoading(false);
+        }
+    };
+
+    return (
+      <div className="flex gap-8 p-6 bg-gray-100 rounded-lg shadow-md max-w-6xl mx-auto mb-5">
+      {/* Image Upload Section */}
+        <div className="flex flex-col items-center justify-center w-1/2 border-2 border-dashed border-gray-400 rounded-lg p-6">
+            <label className="cursor-pointer text-gray-500 text-sm">
+                Drop files to upload or <span className="text-blue-500">browse</span>
+                <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" required />
             </label>
-            <input
-                id="fileInput"
-                type="file"
-                className="hidden"
-                accept="image/*"
-                multiple
-                onChange={handleImageUpload}
-            />
-            </div>
-        )}
+            {productData.image && <img src={productData.image} alt="Preview" className="mt-4 w-32 h-32 object-cover rounded-lg" />}
         </div>
-
-
-      {/* Right Side - Options */}
-      <div className=" border-solid border-2 h-full w-full border-gray-100 flex flex-col flex-1 bg-white rounded-sm p-6 mt-6 md:mt-0 md:ml-6">
-
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">
-            Item Name
-          </label>
-          <textarea className="overflow-ellipsis w-full mt-1 border rounded-md p-2 text-sm"></textarea>
+        
+        {/* Form Section */}
+        <div className="w-1/2 bg-white p-6 rounded-lg shadow-md">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                <div>
+                    <label className="block text-gray-700">Item Name</label>
+                    <input type="text" name="item_name" className="w-full border rounded p-2" onChange={handleChange} required />
+                </div>
+                <div>
+                    <label className="block text-gray-700">Category</label>
+                    <select name="category" className="w-full border rounded p-2" onChange={handleChange} required>
+                        <option value="None">None</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Furniture">Furniture</option>
+                    </select>
+                </div>
+                <div>
+                    <label className="block text-gray-700">Price</label>
+                    <input type="number" name="price" className="w-full border rounded p-2" onChange={handleChange} required />
+                </div>
+                <div>
+                    <label className="block text-gray-700">Description</label>
+                    <textarea name="description" className="w-full border rounded p-2" onChange={handleChange} required />
+                </div>
+                <div>
+                    <label className="block text-gray-700">Open to Bargain</label>
+                    <select name="openToBargain" className="w-full border rounded p-2" onChange={handleChange}>
+                        <option value="Yes">Yes</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
+                <div>
+                    <label className="block text-gray-700">Quantity</label>
+                    <input type="number" name="quantity" className="w-full border rounded p-2" onChange={handleChange} required />
+                </div>
+                <div className="flex justify-between mt-4">
+                    <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded shadow" disabled={loading}>
+                        {loading ? "Uploading..." : "Upload files"}
+                    </button>
+                    <button type="button" className="bg-red-500 text-white px-4 py-2 rounded shadow">Cancel</button>
+                </div>
+            </form>
+            {message && <p className="text-green-500 mt-2">{message}</p>}
         </div>
-
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">
-            Category
-          </label>
-          <select className="w-full mt-1 border rounded-md p-2 text-sm">
-            <option>None</option>
-            <option>Important</option>
-            <option>General</option>
-          </select>
-        </div>
-
-        <div className="mb-4">
-          <label className=" h-4 block text-sm font-medium text-gray-700">
-            Price
-          </label>
-          <textarea className=" w-full mt-1 border rounded-md p-2 text-sm"></textarea>
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">
-            Description
-          </label>
-          <textarea className=" overflow-ellipsis w-full mt-1 border rounded-md p-2 text-sm"></textarea>
-        </div>
-
-        <div className="flex items-center mb-4">
-          <input
-            type="checkbox"
-            id="sendCopy"
-            className="mr-2 border-gray-300"
-          />
-          <label htmlFor="sendCopy" className="text-sm text-gray-700">
-            Send me a copy
-          </label>
-        </div>
-
-        <div className="flex justify-between">
-          <button className="bg-blue-500 text-white py-1 px-4 rounded-md hover:bg-blue-600">
-            Upload files
-          </button>
-          <button className="bg-red-600 text-white py-1 px-4 rounded-md hover:bg-red-700">
-            Cancel
-          </button>
-        </div>
-      </div>
     </div>
-    </div>
-  );
+    );
 };
 
-export default SellP;
+export default UploadProduct;
