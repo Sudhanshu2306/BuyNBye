@@ -4,31 +4,20 @@ import { errorhandler } from '../utils/errorHandler.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 // Create a new product
 const createProduct = asyncHandler(async (req, res) => {
-    const { name, description, highlights, specifications, price, openToBargain, images, brand, category, quantity } = req.body;
+    try {
+        const { image, item_name, category, price, description, openToBargain, quantity, user } = req.body;
 
-    if ([name, description, highlights, specifications, price, openToBargain, images, brand, category, quantity].some(field => !field)) {
-        return res.status(400).json(new errorhandler(400, "All fields are required"));
+        if (!image || !item_name || !category || !price || !description || !openToBargain || !quantity || !user) {
+            return res.status(400).json({ success: false, message: "All fields are required" });
+        }
+
+        const product = new Product({ image, item_name, category, price, description, openToBargain, quantity, user });
+        await product.save();
+
+        res.status(201).json({ success: true, message: "Product uploaded successfully!", product });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
     }
-
-    const product = new Product({
-        name,
-        description,
-        highlights,
-        specifications,
-        price,
-        openToBargain,
-        images,
-        brand,
-        category,
-        quantity,
-        user: req.user._id
-    });
-
-    await product.save();
-
-    res.status(201).json(
-        new ApiResponse(201,product,"Product Added Successfully")
-    );
 });
 
 // Get all products
@@ -64,39 +53,6 @@ const getProductById = asyncHandler(async (req, res) => {
     );
 });
 
-// Update a product by ID
-const updateProduct = asyncHandler(async (req, res) => {
-    const { name, description, highlights, specifications, price, openToBargain, images, brand, category, quantity } = req.body;
-
-    let product = await Product.findById(req.params.id);
-
-    if (!product){
-        return res.status(404).json(new errorhandler(404, "Product not found"));
-    }
-
-    product.name = name || product.name;
-    product.description = description || product.description;
-    product.highlights = highlights || product.highlights;
-    product.specifications = specifications || product.specifications;
-    product.price = price || product.price;
-    product.openToBargain = openToBargain || product.openToBargain;
-    product.images = images || product.images;
-    product.brand = brand || product.brand;
-    product.category = category || product.category;
-    product.quantity = quantity || product.quantity;
-
-    await product.save();
-    res.status(200).json(
-        new ApiResponse(
-            200, 
-            {
-                product
-            },
-            "Product updated successfully"
-        )
-    );
-});
-
 // Delete a product by ID
 const deleteProduct = asyncHandler(async (req, res) => {
     // Find the product by its ID
@@ -125,4 +81,4 @@ const deleteProduct = asyncHandler(async (req, res) => {
 });
 
 
-export { createProduct, getAllProducts, getProductById, updateProduct, deleteProduct };
+export { createProduct, getAllProducts, getProductById, deleteProduct };
