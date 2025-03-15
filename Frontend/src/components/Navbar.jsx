@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-import NavAvatar from './NavAvatar';
-import { Link } from 'react-router-dom';
+import React, { useState } from "react";
+import NavAvatar from "./NavAvatar";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-
+  const { isLoggedIn } = useAuth();
+  const navigate = useNavigate();
   return (
     <div className="bg-white  border-gray-200 pb-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -16,19 +18,19 @@ function Navbar() {
           {/* Centered Navigation Links */}
           <div className="hidden md:flex justify-center flex-grow space-x-8">
             <Link
-              to={'/sell'}
+              to={"/sell"}
               className="text-gray-800 hover:text-black font-medium transition"
             >
               Sell
             </Link>
             <Link
-              to={'/buy'}
+              to={"/buy"}
               className="text-gray-800 hover:text-black font-medium transition"
             >
               Buy
             </Link>
             <Link
-              to={'/aboutus'}
+              to={"/aboutus"}
               className="text-gray-800 hover:text-black font-medium transition"
             >
               About
@@ -37,7 +39,16 @@ function Navbar() {
 
           {/* Placeholder for Button or Additional Content */}
           <div className="hidden md:flex">
-            <NavAvatar></NavAvatar>
+            {isLoggedIn ? (
+              <NavAvatar></NavAvatar>
+            ) : (
+              <button
+                onClick={() => navigate("/signin")}
+                className="text-blue-500"
+              >
+                Sign in !!
+              </button>
+            )}
           </div>
 
           {/* Mobile Menu Toggle Button */}
@@ -71,25 +82,25 @@ function Navbar() {
         <div className="md:hidden">
           <div className="space-y-2 px-4 pt-4 pb-6">
             <a
-              to={'/'}
+              to={"/"}
               className="block text-gray-800 hover:text-black font-medium transition"
             >
               New Stuff
             </a>
             <a
-              to={'/'}
+              to={"/"}
               className="block text-gray-800 hover:text-black font-medium transition"
             >
               Shop
             </a>
             <a
-              to={'/'}
+              to={"/"}
               className="block text-gray-800 hover:text-black font-medium transition"
             >
               Events
             </a>
             <a
-              to={'/'}
+              to={"/"}
               className="block text-gray-800 hover:text-black font-medium transition"
             >
               About

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import axios from 'axios'
 import {Link , Navigate} from "react-router-dom"
 import { useAuth } from '../context/AuthContext';
+import { Backendurl } from '../../Private/backend';
 function Signup() {
   const {isLoggedIn,storeTokenInLS} = useAuth();
   if(isLoggedIn){
@@ -25,7 +26,7 @@ function Signup() {
     e.preventDefault();
     try {
       const response = await axios.post(
-        'http://localhost:3000/api/v1/users/register',
+        `${Backendurl}/api/v1/users/register`,
         formData,{ withCredentials: true }
       );
       storeTokenInLS(response.data.data.accessToken);

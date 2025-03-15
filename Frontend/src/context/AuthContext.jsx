@@ -1,28 +1,37 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import toast from 'react-hot-toast';
 import axios from 'axios'
+import { Backendurl } from "../../Private/backend";
+import { useNavigate } from "react-router-dom";
 export const AuthContext = createContext({});
 export const AuthProvider = ({ children }) => {
 
     const [token, setToken] = useState(localStorage.getItem('accessToken') || '');
     const [user, setUser] = useState("");
     const [loading, setLoading] = useState(true);  
+    // const [pendingForm, setPendingForm] = useState(null);
+    // const [redirectPath, setRedirectPath] = useState("/");
     const storeTokenInLS = (accessToken) => {
         localStorage.setItem('accessToken', accessToken);
         setToken(accessToken);
     }
-
     let isLoggedIn = !!token;
 
-    
     const logout = () => {
         localStorage.removeItem('accessToken');
+        setUser("");
         setToken("");
     }
+    // const saveFormBeforeRedirect = (formData, path) => {
+    //     setPendingForm(formData);
+    //     setRedirectPath(path);
+    //     navigate("/signin");
+    // };
+    
     const userAuthentication = async () => {
         setLoading(true);
         try {
-            const response = await axios.get('http://localhost:3000/api/v1/users/current-user', {
+            const response = await axios.get(`${Backendurl}/api/v1/users/current-user`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -32,6 +41,7 @@ export const AuthProvider = ({ children }) => {
                 console.log("user is ", response.data.data);
                 const userData = response.data.data;
                 setUser(userData);
+                toast.success("User Fetched Succesfully !!");
             } else {
                 setUser(null);
             }

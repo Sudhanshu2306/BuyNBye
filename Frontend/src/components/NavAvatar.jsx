@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react";
 
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
+import { Backendurl } from "../../Private/backend";
 function AdditionalButton() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const {logout} = useAuth();
+  const {logout,user} = useAuth();
   const handleLogout = async () => {
     try {
       logout();
-      const response = await axios.get('http://localhost:3000/api/v1/users/logout', {
+      const response = await axios.get(`${Backendurl}/api/v1/users/logout`, {
         withCredentials: true,
       });
   
@@ -28,7 +29,7 @@ function AdditionalButton() {
       >
         {/* Replace the placeholder below with your image */}
         <img
-          src="https://via.placeholder.com/40"
+          src={`https://avatar.iran.liara.run/public/${user.gender === 'Male' ? `boy` : `girl`}?username=${user.name}`}
           alt="Dropdown Icon"
           className="w-10 h-10 rounded-full"
         />
