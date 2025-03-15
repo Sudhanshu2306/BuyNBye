@@ -5,13 +5,13 @@ import { ApiResponse } from '../utils/ApiResponse.js';
 // Create a new product
 const createProduct = asyncHandler(async (req, res) => {
     try {
-        const { image, item_name, category, price, description, openToBargain, quantity, user } = req.body;
+        const { image, item_name, category, price, description, openToBargain, quantity } = req.body;
 
-        if (!image || !item_name || !category || !price || !description || !openToBargain || !quantity || !user) {
+        if (!image || !item_name || !category || !price || !description || !openToBargain || !quantity) {
             return res.status(400).json({ success: false, message: "All fields are required" });
         }
-
-        const product = new Product({ image, item_name, category, price, description, openToBargain, quantity, user });
+        
+        const product = new Product({ image, item_name, category, price, description, openToBargain, quantity ,  user : req.user});
         await product.save();
 
         res.status(201).json({ success: true, message: "Product uploaded successfully!", product });

@@ -3,6 +3,8 @@ import { useAuth } from '../context/AuthContext'
 import { Navigate } from 'react-router-dom';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { Backendurl } from '../../Private/backend';
+import toast from 'react-hot-toast';
 function Signin() {
   const [formdata,setformdata] = useState({
     email : "",
@@ -10,7 +12,7 @@ function Signin() {
   });
   const { isLoggedIn , storeTokenInLS } = useAuth();
   if(isLoggedIn){
-    console.log("What happen ")
+    // toast("Already Loggedin !!");
     return <Navigate to={"/"} />
   }
   
@@ -26,7 +28,7 @@ function Signin() {
   const getmeloggedin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3000/api/v1/users/login',formdata , { withCredentials : true});
+      const response = await axios.post(`${Backendurl}/api/v1/users/login`,formdata , { withCredentials : true});
       storeTokenInLS(response.data.data.accessToken);
     } catch (error) {
       console.log(error);

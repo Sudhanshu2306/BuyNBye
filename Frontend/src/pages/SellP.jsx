@@ -1,7 +1,17 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { Backendurl } from "../../Private/backend";
+import { useAuth } from "../context/AuthContext";
+import { Navigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const UploadProduct = () => {
+    const { isLoggedIn } = useAuth();
+    if(!isLoggedIn){
+        toast.error("Please Login Before Sell !!");
+        return <Navigate to={"/signin"} />
+    }
+    const {user} = useAuth();
     const [productData, setProductData] = useState({
         item_name: "",
         category: "",
@@ -10,12 +20,10 @@ const UploadProduct = () => {
         openToBargain: "Yes",
         quantity: 1,
         image: "",
-        user: "65a12345b67890cde1234567" // Replace with actual user ID
+        user: user._id,
     });
-
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
-
     // Handle input change
     const handleChange = (e) => {
         setProductData({ ...productData, [e.target.name]: e.target.value });
@@ -42,7 +50,7 @@ const UploadProduct = () => {
         setMessage("");
 
         try {
-            const response = await axios.post("http://localhost:3001/api/v1/products/createProduct", productData, {
+            const response = await axios.post(`${Backendurl}/api/v1/products/createProduct`, productData, {
                 headers: { "Content-Type": "application/json" }
             });
 
