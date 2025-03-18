@@ -1,17 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import Card from '../components/Card';
+import { useAuth } from "../context/AuthContext";
+import { Navigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import { Backendurl } from "../../Private/backend";
 
-function HomeP() {
+const HomeP = () => {
+    const { isLoggedIn } = useAuth();
+    if(!isLoggedIn){
+        toast.error("Please Login Before Sell !!");
+        return <Navigate to={"/signin"} />
+    }
+    // const token = useState(localStorage.getItem('accessToken') || "");
   const [data, setData] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('data/list.json'); 
-        const result = await response.json();
+        const response = await fetch(`${Backendurl}/api/v1/products/getAllProducts`,{
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+        const text = await response.text(); 
+        // console.log("Raw Response:", text); // Log response to check for HTML errors
+
+        const result = JSON.parse(text);
         setData(result);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       }
     };
 

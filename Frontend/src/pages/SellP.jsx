@@ -51,7 +51,9 @@ const UploadProduct = () => {
 
         try {
             const response = await axios.post(`${Backendurl}/api/v1/products/createProduct`, productData, {
-                headers: { "Content-Type": "application/json" }
+                headers: { "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`, 
+                 }
             });
 
             setMessage(response.data.message);

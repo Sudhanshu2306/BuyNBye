@@ -22,15 +22,13 @@ const createProduct = asyncHandler(async (req, res) => {
 
 // Get all products
 const getAllProducts = asyncHandler(async (req, res) => {
-    const products = await Product.find();
-
-    res.status(200).json(
-        new ApiResponse(
-            200,
-            products,
-            "All The Products Generated"
-        )
-    )
+    try {
+        const products = await Product.find(); // Fetch all products from MongoDB
+        res.json(products);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+      }
 });
 
 

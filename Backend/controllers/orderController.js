@@ -5,7 +5,7 @@ import { ApiResponse } from '../utils/ApiResponse.js';
 
 // Create a new order
 const createOrder = asyncHandler(async (req, res) => {
-    const { collectionInfo, orderItems, user, paymentInfo, paidAt, totalPrice, orderStatus } = req.body;
+    const { collectionInfo, orderItems, paymentInfo, paidAt, totalPrice, orderStatus } = req.body;
 
     // Validate order items
     if (!orderItems || orderItems.length === 0) {

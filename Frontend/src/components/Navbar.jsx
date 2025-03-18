@@ -24,7 +24,7 @@ function Navbar() {
               Sell
             </Link>
             <Link
-              to={"/buy"}
+              to={"/"}
               className="text-gray-800 hover:text-black font-medium transition"
             >
               Buy

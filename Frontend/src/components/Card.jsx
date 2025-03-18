@@ -2,13 +2,13 @@ import React from 'react'
 
 function Card({data}) {
     const t=2;
-    const {price ,description, date, isFeatured, img} = data;
+    const {image ,item_name, category, price, description, openToBargain, quantity, user, createdAt} = data;
     return (
         <div className="max-w-sm bg-gray-800 h-100 w-80 rounded-3xl shadow-md overflow-hidden">
         {/* Image Section */}
         <div className="bg-lime-500">
           <img
-            src={img} // Replace this with the actual image URL
+            src={image} // Replace this with the actual image URL
             alt="Shoes"
             className="w-80 h-52 object-cover items-center justify-center"
           />

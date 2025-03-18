@@ -11,7 +11,7 @@ const router = express.Router();
 router.post('/createProduct', verifyJWT, createProduct);
 
 // Route to get all products (no authentication required)
-router.get('/getAllProducts', getAllProducts);
+router.get('/getAllProducts', verifyJWT, getAllProducts);
 
 // Route to get a product by ID (no authentication required)
 router.get('/getProductById/:id', getProductById);
